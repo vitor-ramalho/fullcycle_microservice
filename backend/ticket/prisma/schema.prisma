@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  event_id    String   @id @db.Uuid
+  description String
+  price       Float
+  capacity    Int
+
+  tickets     Ticket[]
+  transactions Transaction[]
+}
+
+model Ticket {
+  ticket_id String @id @db.Uuid
+  event_id  String @db.Uuid
+  email     String
+  status    String
+
+  event       Event       @relation(fields: [event_id], references: [event_id])
+  transactions Transaction[]
+}
+
+model Transaction {
+  transaction_id String @id @db.Uuid
+  ticket_id      String @db.Uuid
+  event_id       String @db.Uuid
+  tid            String
+  price          Float
+  status         String
+
+  ticket Ticket @relation(fields: [ticket_id], references: [ticket_id])
+  event  Event  @relation(fields: [event_id], references: [event_id])
+}
